@@ -1,4 +1,4 @@
-<!-- ![GitHub](https://img.shields.io/github/license/gokg4/go_crypto_http) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/gokg4/go_crypto_http) ![GitHub repo size](https://img.shields.io/github/repo-size/gokg4/go_crypto_http) -->
+![GitHub](https://img.shields.io/github/license/gokg4/go-crypt-cli) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/gokg4/go-crypt-cli) ![GitHub repo size](https://img.shields.io/github/repo-size/gokg4/go-crypt-cli)
 
 # go_crypto_cli
 

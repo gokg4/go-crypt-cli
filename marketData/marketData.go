@@ -24,9 +24,11 @@ type GeckoMarketData []struct {
 	LastUpdated   time.Time `json:"last_updated"`
 }
 
-func MarketData(c string) GeckoMarketData {
+func MarketData(c string, l string) GeckoMarketData {
 	currency := strings.Trim(c, " ")
-	url := GeckoMarketUrl + "?vs_currency=" + currency + "&order=market_cap_desc&per_page=10&page=1&sparkline=false&precision=2"
+	topList := strings.Trim(l, " ")
+	url := GeckoMarketUrl + fmt.Sprintf("?vs_currency=%v&order=market_cap_desc&per_page=%v&page=1&sparkline=false&precision=2", currency, topList)
+
 	res, err := http.Get(url)
 
 	if err != nil {

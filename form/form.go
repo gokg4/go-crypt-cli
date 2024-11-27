@@ -14,7 +14,7 @@ var (
 func GetFormData() (Currency string, TopList string) {
 	form := huh.NewForm(
 		huh.NewGroup(
-			// Ask the user for a base burger and toppings.
+			// Ask the user for a preferred currency and top list number.
 			huh.NewSelect[string]().
 				Title("Choose your preferred currency").
 				Options(

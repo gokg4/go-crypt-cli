@@ -1,12 +1,14 @@
 ![GitHub](https://img.shields.io/github/license/gokg4/go-crypt-cli) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/gokg4/go-crypt-cli) ![GitHub repo size](https://img.shields.io/github/repo-size/gokg4/go-crypt-cli)
 
-# go_crypto_cli
+# GO Crypto CLI
 
-A command line application written in go [Bubble Tea](https://github.com/charmbracelet/bubbletea) package to check current crypto price using the [coingecko api](https://docs.coingecko.com/v3.0.1/reference/introduction).
+A command line application written in go using the [Bubble Tea](https://github.com/charmbracelet/bubbletea) package and the [CoinGecko API](https://docs.coingecko.com/v3.0.1/reference/introduction) to check the current price of cryptocurrencies.
 
-Install go from the official website [link](https://go.dev/dl/).
+This project is still a work in progress.
 
 ## Installation
+
+Install go from the official website [link](https://go.dev/dl/).
 
 Give a Try, clone this repository and run the following command in the terminal.
 
@@ -25,3 +27,9 @@ Once built and compiled you can run from command line using the following comman
 ## Contributors
 
 - [gokg4](https://github.com/gokg4) - creator and maintainer
+
+***
+
+Made with [Charm](https://charm.sh/libs/).
+
+<a href="https://charm.sh/"><img alt="The Charm logo" src="https://stuff.charm.sh/charm-badge.jpg" width="400"></a>

@@ -44,7 +44,7 @@ func GetMarketData(c string, l string) GeckoMarketData {
 	}
 
 	if res.StatusCode == 200 {
-		var data GeckoMarketData // Assuming an array of market data
+		var data GeckoMarketData
 		err := json.Unmarshal(body, &data)
 		if err != nil {
 			log.Fatal(err)

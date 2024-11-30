@@ -1,6 +1,6 @@
 ![GitHub](https://img.shields.io/github/license/gokg4/go-crypt-cli) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/gokg4/go-crypt-cli) ![GitHub repo size](https://img.shields.io/github/repo-size/gokg4/go-crypt-cli)
 
-# GO Crypto CLI
+# Go Crypto CLI
 
 A command line application written in go using the [Bubble Tea](https://github.com/charmbracelet/bubbletea) package and the [CoinGecko API](https://docs.coingecko.com/v3.0.1/reference/introduction) to check the current price of cryptocurrencies.
 

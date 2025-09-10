@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 )
@@ -25,38 +23,31 @@ type GeckoMarketData []struct {
 	Description   string
 }
 
-func GetMarketData(c string, l string) GeckoMarketData {
+func GetMarketData(c string, l string) (GeckoMarketData, error) {
 	currency := strings.Trim(c, " ")
 	topList := strings.Trim(l, " ")
 	url := GeckoMarketUrl + fmt.Sprintf("?vs_currency=%v&order=market_cap_desc&per_page=%v&page=1&sparkline=false&precision=2", currency, topList)
 
 	res, err := http.Get(url)
-
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
-
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	if res.StatusCode == 200 {
 		var data GeckoMarketData
 		err := json.Unmarshal(body, &data)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
-
-		return data
-
+		return data, nil
 	} else {
-		fmt.Printf("Error Code: %d \n", res.StatusCode)
-		os.Exit(1)
-		return nil
+		return nil, fmt.Errorf("failed to fetch market data: status code %d", res.StatusCode)
 	}
 }
 
@@ -74,7 +65,9 @@ func FetchCoinDescription(id string) (string, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return "", err
 	}
-	// Prefer English description
-	desc := result.Description["en"]
+	desc, ok := result.Description["en"]
+	if !ok {
+		return "No description available.", nil
+	}
 	return desc, nil
 }

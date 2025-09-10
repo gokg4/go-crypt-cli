@@ -1,20 +1,20 @@
 package form
 
 import (
-	"log"
-
 	"github.com/charmbracelet/huh"
+	tea "github.com/charmbracelet/bubbletea"
 )
 
-var (
+type Model struct {
+	Form *huh.Form
 	Currency string
 	TopList  string
-)
+}
 
-func GetFormData() (Currency string, TopList string) {
+func New() Model {
+	var currency, topList string
 	form := huh.NewForm(
 		huh.NewGroup(
-			// Ask the user for a preferred currency and top list number.
 			huh.NewSelect[string]().
 				Title("Choose your preferred currency").
 				Options(
@@ -24,9 +24,8 @@ func GetFormData() (Currency string, TopList string) {
 					huh.NewOption("INR", "inr"),
 					huh.NewOption("AUD", "aud"),
 				).
-				Value(&Currency), // store the chosen option in the "Currency" variable
+				Value(&currency),
 
-			// Let the user select top list of cryptocurrencies.
 			huh.NewSelect[string]().
 				Title("Top List (eg: top 10 cryptocurrencies)").
 				Options(
@@ -34,14 +33,26 @@ func GetFormData() (Currency string, TopList string) {
 					huh.NewOption("Top 25", "25"),
 					huh.NewOption("Top 50", "50"),
 				).
-				Value(&TopList), // store the chosen option in the "TopList" variable
+				Value(&topList),
 		),
 	)
+	return Model{Form: form, Currency: currency, TopList: topList}
+}
 
-	err := form.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
+func (m Model) Init() tea.Cmd {
+	return m.Form.Init()
+}
 
-	return Currency, TopList
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	form, cmd := m.Form.Update(msg)
+	m.Form = form.(*huh.Form)
+	return m, cmd
+}
+
+func (m Model) View() string {
+	return m.Form.View()
+}
+
+func (m Model) GetFormData() (string, string) {
+	return m.Currency, m.TopList
 }

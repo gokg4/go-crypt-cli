@@ -22,6 +22,7 @@ type GeckoMarketData []struct {
 	MarketCap     int64     `json:"market_cap"`
 	MarketCapRank int       `json:"market_cap_rank"`
 	LastUpdated   time.Time `json:"last_updated"`
+	Description   string
 }
 
 func GetMarketData(c string, l string) GeckoMarketData {
@@ -57,4 +58,23 @@ func GetMarketData(c string, l string) GeckoMarketData {
 		os.Exit(1)
 		return nil
 	}
+}
+
+func FetchCoinDescription(id string) (string, error) {
+	url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s", id)
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	var result struct {
+		Description map[string]string `json:"description"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return "", err
+	}
+	// Prefer English description
+	desc := result.Description["en"]
+	return desc, nil
 }

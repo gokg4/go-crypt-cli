@@ -1,18 +1,11 @@
-package form
+package ui
 
 import (
 	"github.com/charmbracelet/huh"
-	tea "github.com/charmbracelet/bubbletea"
 )
 
-type Model struct {
-	Form *huh.Form
-	Currency string
-	TopList  string
-}
-
-func New() Model {
-	var currency, topList string
+func RunForm() (string, string, error) {
+	var currency, limit string
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewSelect[string]().
@@ -33,26 +26,13 @@ func New() Model {
 					huh.NewOption("Top 25", "25"),
 					huh.NewOption("Top 50", "50"),
 				).
-				Value(&topList),
+				Value(&limit),
 		),
 	)
-	return Model{Form: form, Currency: currency, TopList: topList}
-}
 
-func (m Model) Init() tea.Cmd {
-	return m.Form.Init()
-}
-
-func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	form, cmd := m.Form.Update(msg)
-	m.Form = form.(*huh.Form)
-	return m, cmd
-}
-
-func (m Model) View() string {
-	return m.Form.View()
-}
-
-func (m Model) GetFormData() (string, string) {
-	return m.Currency, m.TopList
+	err := form.Run()
+	if err != nil {
+		return "", "", err
+	}
+	return currency, limit, nil
 }

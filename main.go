@@ -4,26 +4,23 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
-	"runtime"
 	"strconv"
 
 	"cli-view-crypto-prices/internal/ui"
+	"cli-view-crypto-prices/internal/utils"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-func clearScreen() {
-	var cmd *exec.Cmd
-	if runtime.GOOS == "windows" {
-		cmd = exec.Command("cmd", "/c", "cls")
-	} else {
-		cmd = exec.Command("clear")
-	}
-	cmd.Stdout = os.Stdout
-	cmd.Run()
-}
-
 func main() {
+	start, err := ui.RunIntro()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if !start {
+		os.Exit(0)
+	}
+
 	for {
 		currency, limit, err := ui.RunForm()
 		if err != nil {
@@ -48,6 +45,6 @@ func main() {
 		if !tableModel.ShowForm {
 			break
 		}
-		clearScreen()
+		utils.ClearScreen()
 	}
 }

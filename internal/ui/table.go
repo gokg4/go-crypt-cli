@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/charmbracelet/bubbles/table"
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/glamour"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/reflow/wordwrap"
 )
@@ -29,8 +31,6 @@ var ( // styles
 		BorderStyle(lipgloss.NormalBorder()).
 		BorderForeground(lipgloss.Color("240")).
 		Padding(0, 1)
-
-	labelStyle = lipgloss.NewStyle().Bold(true)
 
 	errorStyle = lipgloss.NewStyle().
 		BorderStyle(lipgloss.NormalBorder()).
@@ -56,6 +56,7 @@ type Model struct {
 	Limit          int
 	Cryptos        []api.Crypto // Storing the list of cryptos
 	Description    string       // Storing the description
+	StatusMessage  string
 }
 
 // message for when the initial data is loaded
@@ -67,15 +68,20 @@ type descriptionMsg struct{ description string }
 // message for error during fetch
 type errMsg struct{ err error }
 
-func (m Model) Init() tea.Cmd {
+func (m *Model) Init() tea.Cmd {
 	return tea.Batch(m.Spinner.Tick, m.fetchData())
 }
 
-func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var (
 		cmd  tea.Cmd
 		cmds []tea.Cmd
 	)
+	// Clear the status message on any key press
+	if _, ok := msg.(tea.KeyMsg); ok {
+		m.StatusMessage = ""
+	}
+
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		headerHeight := lipgloss.Height(m.headerView())
@@ -102,6 +108,32 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 		}
+		if m.ShowDetails {
+			switch msg.String() {
+			case "m":
+				if m.Coin != nil {
+					markdown, err := GenerateMarkdown(*m.Coin, m.Currency)
+					if err != nil {
+						m.StatusMessage = "Error generating markdown"
+						return m, nil
+					}
+					if err := os.MkdirAll("markdown", 0755); err != nil {
+						m.StatusMessage = "Error creating markdown directory"
+						return m, nil
+					}
+					filename := fmt.Sprintf("markdown/%s-details.md", m.Coin.ID)
+					err = os.WriteFile(filename, []byte(markdown), 0644)
+					if err != nil {
+						m.StatusMessage = "Error saving markdown file"
+					} else {
+						m.StatusMessage = fmt.Sprintf("Saved to %s", filename)
+					}
+				}
+				return m, nil
+			}
+
+		}
+
 		switch msg.String() {
 		case "q", "ctrl+c":
 			return m, tea.Quit
@@ -153,18 +185,22 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		selectedCoin.Description = msg.description
 		m.Coin = &selectedCoin
 
-		detailContent := fmt.Sprintf(
-			"%s %s\n%s %s\n%s %.2f %s\n%s %d %s\n%s %d\n\n%s\n%s",
-			labelStyle.Render("Name:"), m.Coin.Name,
-			labelStyle.Render("Symbol:"), strings.ToUpper(m.Coin.Symbol),
-			labelStyle.Render("Current Price:"), m.Coin.CurrentPrice, strings.ToUpper(m.Currency),
-			labelStyle.Render("Market Cap:"), m.Coin.MarketCap, strings.ToUpper(m.Currency),
-			labelStyle.Render("Market Cap Rank:"), m.Coin.MarketCapRank,
-			labelStyle.Render("Description:"),
-			m.Coin.Description,
-		)
-		m.Description = detailContent
-		m.Viewport.SetContent(wordwrap.String(detailContent, m.Viewport.Width))
+		markdown, err := GenerateMarkdown(*m.Coin, m.Currency)
+		if err != nil {
+			m.ErrorMessage = "Error generating markdown for view"
+			m.ShowError = true
+			return m, nil
+		}
+
+		out, err := glamour.Render(markdown, "dark")
+		if err != nil {
+			m.ErrorMessage = "Error rendering markdown for view"
+			m.ShowError = true
+			return m, nil
+		}
+		m.Description = out
+		m.Viewport.SetContent(m.Description)
+
 		return m, nil
 
 	case errMsg:
@@ -189,7 +225,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-func (m Model) View() string {
+func (m *Model) View() string {
 	if m.ShowError {
 		return errorStyle.Render(fmt.Sprintf("Error: %s\n\nPress 'e' to edit preferences, or any other key to retry.", m.ErrorMessage))
 	}
@@ -197,7 +233,7 @@ func (m Model) View() string {
 		return fmt.Sprintf("\n   %s %s... \n\n", m.Spinner.View(), m.LoadingMessage)
 	}
 	if m.ShowDetails {
-		return fmt.Sprintf("%s\n%s\n%s", m.headerView(), m.Viewport.View(), m.footerView()+"\nPress 'enter' or 'esc' to go back.")
+		return fmt.Sprintf("%s\n%s\n%s", m.headerView(), m.Viewport.View(), m.footerView()+"\nPress 'm' to save as markdown, 'enter' or 'esc' to go back.")
 	}
 	return "\n" + m.Table.View() + "\nPress 'q' to quit, 'enter' for details, 'e' to edit preferences.\n"
 }
@@ -210,8 +246,12 @@ func (m *Model) headerView() string {
 
 func (m *Model) footerView() string {
 	info := infoStyle.Render(fmt.Sprintf("%3.f%%", m.Viewport.ScrollPercent()*100))
-	line := strings.Repeat("─", max(0, m.Viewport.Width-lipgloss.Width(info)))
-	return lipgloss.JoinHorizontal(lipgloss.Center, line, info)
+	status := ""
+	if m.StatusMessage != "" {
+		status = infoStyle.Render(m.StatusMessage)
+	}
+	line := strings.Repeat("─", max(0, m.Viewport.Width-lipgloss.Width(info)-lipgloss.Width(status)))
+	return lipgloss.JoinHorizontal(lipgloss.Center, line, status, info)
 }
 
 func (m *Model) createTableRows() []table.Row {
@@ -272,7 +312,7 @@ func NewModel(currency string, limit int) *Model {
 	}
 }
 
-func (m Model) fetchData() tea.Cmd {
+func (m *Model) fetchData() tea.Cmd {
 	return func() tea.Msg {
 		cryptos, err := api.GetMarketData(m.Currency, m.Limit)
 		if err != nil {

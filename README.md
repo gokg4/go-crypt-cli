@@ -1,28 +1,100 @@
 ![GitHub](https://img.shields.io/github/license/gokg4/go-crypt-cli) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/gokg4/go-crypt-cli) ![GitHub repo size](https://img.shields.io/github/repo-size/gokg4/go-crypt-cli)
 
-# Go Crypto CLI
+# Crypto Price Viewer CLI
 
-A command line application written in go using the [Bubble Tea](https://github.com/charmbracelet/bubbletea) package and the [CoinGecko API](https://docs.coingecko.com/v3.0.1/reference/introduction) to check the current price of cryptocurrencies.
+A command-line interface (CLI) application for viewing cryptocurrency prices, built with Go and the Bubble Tea framework.
 
-This project is still a work in progress.
+## Features
 
-## Installation
+*   **Top Cryptocurrencies:** View a list of the top cryptocurrencies by market capitalization.
+*   **Detailed View:** Select a cryptocurrency to view its detailed information, including a description.
+*   **Customizable:** Choose the currency (e.g., USD, EUR, JPY) and the number of cryptocurrencies to display.
+*   **Markdown Export:** Save the details of a cryptocurrency to a markdown file.
+*   **Interactive UI:** A user-friendly interface built with Bubble Tea.
 
-Install go from the official website [link](https://go.dev/dl/).
+## Getting Started
 
-Give a Try, clone this repository and run the following command in the terminal.
+### Prerequisites
 
-```go run main.go```
+*   Go 1.18 or later
+*   A working internet connection
 
-Build and Compile with the following command.
+### Installation
 
-```go build -o ./bin/geckoCrypto -ldflags="-s -w"```
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/gokg4/go-crypt-cli
+    ```
+2.  Navigate to the project directory:
+    ```bash
+    cd go-crypt-cli
+    ```
+3.  Install the dependencies:
+    ```bash
+    go mod tidy
+    ```
+4.  Build and Compile with the following command.
+    ```bash
+    go build -o ./bin/geckoCrypto -ldflags="-s -w"
+    ```
+
+### Running the Application
+
+To run the application, use the following command:
+
+```bash
+go run .
+```
+
+By default, the application will display the top 10 cryptocurrencies in USD. You can customize this by providing command-line flags:
+
+*   `-currency`: The currency to display the prices in (e.g., 'eur', 'jpy'). Defaults to 'usd'.
+*   `-limit`: The number of cryptocurrencies to display. Defaults to 10.
+
+For example, to display the top 20 cryptocurrencies in EUR, you would run:
+
+```bash
+go run . -currency eur -limit 20
+```
 
 ## Usage
 
 Once built and compiled you can run from command line using the following command.
 
-```./bin/geckoCrypto```
+```bash
+./bin/geckoCrypto
+```
+
+### Main View
+
+*   **Up/Down Arrows:** Navigate through the list of cryptocurrencies.
+*   **Enter:** View the details of the selected cryptocurrency.
+*   **e:** Edit preferences (currency and limit). This will exit the application and you will have to re-run it with the desired flags.
+*   **q / ctrl+c:** Quit the application.
+
+### Details View
+
+*   **Up/Down Arrows:** Scroll through the cryptocurrency description.
+*   **m:** Save the details of the cryptocurrency to a markdown file. The file will be saved in the `markdown` directory.
+*   **Enter / Esc:** Return to the main list view.
+
+## Dependencies
+
+This project uses the following Go packages:
+
+*   [github.com/charmbracelet/bubbles](https://github.com/charmbracelet/bubbles)
+*   [github.com/charmbracelet/bubbletea](https://github.com/charmbracelet/bubbletea)
+*   [github.com/charmbracelet/glamour](https://github.com/charmbracelet/glamour)
+*   [github.com/charmbracelet/lipgloss](https://github.com/charmbracelet/lipgloss)
+*   [github.com/muesli/reflow](https://github.com/muesli/reflow)
+*   [github.com/spf13/viper](https://github.com/spf13/viper)
+
+All dependencies are managed using Go modules.
+
+## How It Works
+
+The application fetches cryptocurrency market data from the [CoinGecko API](https://www.coingecko.com/en/api). The data is then displayed in a table format. When a user selects a cryptocurrency, the application fetches the coin's description and displays it in a detailed view. The user can then save this information to a markdown file.
+
 
 ## Contributors
 

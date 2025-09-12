@@ -12,6 +12,10 @@ A command-line interface (CLI) application for viewing cryptocurrency prices, bu
 *   **Markdown Export:** Save the details of a cryptocurrency to a markdown file.
 *   **Interactive UI:** A user-friendly interface built with Bubble Tea.
 
+## How It Works
+
+The application fetches cryptocurrency market data from the [CoinGecko API](https://www.coingecko.com/en/api). The data is then displayed in a table format. When a user selects a cryptocurrency, the application fetches the coin's description and displays it in a detailed view. The user can then save this information to a markdown file.
+
 ## Getting Started
 
 ### Prerequisites
@@ -90,11 +94,6 @@ This project uses the following Go packages:
 *   [github.com/spf13/viper](https://github.com/spf13/viper)
 
 All dependencies are managed using Go modules.
-
-## How It Works
-
-The application fetches cryptocurrency market data from the [CoinGecko API](https://www.coingecko.com/en/api). The data is then displayed in a table format. When a user selects a cryptocurrency, the application fetches the coin's description and displays it in a detailed view. The user can then save this information to a markdown file.
-
 
 ## Contributors
 

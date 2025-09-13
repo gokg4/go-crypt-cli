@@ -31,7 +31,7 @@ func GenerateMarkdown(coin api.Crypto, currency string) (string, error) {
 
 	// Footer
 	builder.WriteString("---\n\n")
-	builder.WriteString(fmt.Sprintf("Generated on: %v %v, %v | %v\n\n", time.Now().Month(), time.Now().Day(), time.Now().Year(), time.Now().Format(time.Kitchen)))
+	builder.WriteString(fmt.Sprintf("Generated on: %s\n\n", time.Now().Format("Jan 2, 2006 | 3:04PM MST")))
 	builder.WriteString(fmt.Sprintf("[View on CoinGecko](https://www.coingecko.com/en/coins/%s)\n", coin.ID))
 
 	return builder.String(), nil

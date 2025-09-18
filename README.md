@@ -82,6 +82,40 @@ Once built and compiled you can run from command line using the following comman
 *   **m:** Save the details of the cryptocurrency to a markdown file. The file will be saved in the `markdown` directory.
 *   **Enter / Esc:** Return to the main list view.
 
+## Architecture
+
+This project is built using the **Elm Architecture**, a design pattern for building interactive applications. The Go library it uses, `bubbletea`, is directly inspired by this pattern.
+
+The core of the architecture is a unidirectional data flow:
+
+```
++-----------------+      +----------------+      +-----------------+
+|      Model      |----->|       View     |----->|       UI        |
+| (holds state)   |      | (renders HTML) |      |   (the screen)  |
++-----------------+      +----------------+      +-----------------+
+        ^                                                 |
+        |                                                 | (User input, e.g. key press)
+        |                                                 |
++-----------------+      +----------------+      +-----------------+
+|      New        |<- - -|     Command    |      |     Message     |
+|   Model & Cmd   |      |   (optional)   |      |  (e.g. KeyMsg)  |
++-----------------+      +----------------+      +-----------------+
+        ^                                                 |
+        |                                                 |
+        +-------------------------------------------------+
+        |                      Update                     |
+        |           (processes messages, updates state)   |
+        +-------------------------------------------------+
+```
+
+1.  **Model:** A single struct (`internal/ui/model.go`) holds the entire state of the application.
+2.  **View:** A function (`internal/ui/view.go`) takes the model and returns a `string` to be rendered to the terminal. It is a pure representation of the state.
+3.  **Update:** A function (`internal/ui/update.go`) is the only place where the state can be changed. It takes a message (like a key press or an API response) and the current model, and returns a new, updated model.
+4.  **Commands:** When the `Update` function needs to perform an action that has side effects (like an HTTP request), it returns a `tea.Cmd`. The `bubbletea` runtime executes this command, which then sends a new message back to the `Update` function with the result.
+
+This creates a clear and predictable data flow that makes the application easier to reason about, debug, and maintain.
+
+
 ## Dependencies
 
 This project uses the following Go packages:

@@ -2,7 +2,7 @@
 
 | Name | Symbol | Current Price | Market Cap | Market Cap Rank |
 |---|---|---|---|---|
-| Ethereum | ETH | 4739.90 USD | 572321246479 USD | 2 |
+| Ethereum | ETH | 4608.18 USD | 556275272312 USD | 2 |
 
 ## Description
 
@@ -12,6 +12,6 @@ On Ethereum, all transactions and smart contract executions require a small fee 
 
 ---
 
-Generated on: Sep 13, 2025 | 4:21AM UTC
+Generated on: Sep 18, 2025 | 4:36AM UTC
 
 [View on CoinGecko](https://www.coingecko.com/en/coins/ethereum)
